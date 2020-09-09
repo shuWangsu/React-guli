@@ -1,9 +1,10 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
-import './index.css';
+// 入口js
+import React from 'react'
+import ReactDom from 'react-dom'
 
-ReactDOM.render(
+import App from './App'
+
+ReactDom.render(
   <App />,
-  document.getElementById('root')
-);
+  document.querySelector('#root')
+)
