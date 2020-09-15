@@ -5,6 +5,7 @@ import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
 import './login.less'
 import logo from './images/logo.png'
+import { reqLogin } from '../../api/index'
 
 /**
  * 登录的路由组件
@@ -12,8 +13,11 @@ import logo from './images/logo.png'
 const Login = () => {
 
   //点击登录提交数据
-  const onFinish = (values) => {
-    console.log('Received values of form: ', values);
+  const onFinish = async (values) => {
+    // 请求登录
+    const { username, password } = values
+      const response = await reqLogin(username, password)
+      console.log(response)
   };
   return (
     <div className="login">
@@ -84,7 +88,7 @@ const Login = () => {
           <Form.Item>
             <Button type="primary" htmlType="submit" className="login-form-button">
               点击登录
-              </Button>
+            </Button>
           </Form.Item>
         </Form>
       </section>
