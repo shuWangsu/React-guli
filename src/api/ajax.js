@@ -6,6 +6,7 @@
  * 1.优化：统一处理请求异常
  * 在外层包一个自己创建的promise对象
  * 在请求出错时，不reject，而是显示错误提示
+ * 2.优化2：异步得到的直接是response.data
  */
 import axios from 'axios'
 import { message } from 'antd'
@@ -20,7 +21,7 @@ export default function ajax (url, data = {}, type = 'GET') {
     }
     // 2.成功：调用resolve
     promise.then(response => {
-      resolve(response)
+      resolve(response.data)
     }).catch(error => {// 3.失败：不调用reject，而是提示异常信息
       message.error('请求出错了:' + error.message)
     })
