@@ -31,8 +31,8 @@ const Admin = (props) => {
         <LeftNav />
       </Sider>
       <Layout>
-        <Header>Header</Header>
-        <Content style={{ backgroundColor: 'white' }}>
+        <Header/>
+        <Content style={{ backgroundColor: 'white',margin: 15 }}>
           <Switch>
             <Route path='/home' component={Home}/>
             <Route path='/category' component={Category}/>
