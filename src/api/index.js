@@ -13,6 +13,9 @@ export const reqLogin = (username, password) => ajax(baseURL + '/login', { usern
 // 添加用户
 export const reqAddUser = (user) => ajax(baseURL + '/manage/user/add', user, 'POST')
 
+//获取所在城市
+export const reqCity = () => ajax(baseURL + '/getcity',{},'GET')
+
 // jsonp 请求的接口请求函数
 
 export const reqWeather = (city) => {

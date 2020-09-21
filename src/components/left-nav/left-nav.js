@@ -1,7 +1,7 @@
 /**
  * 左侧导航的组件
  */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link, withRouter } from 'react-router-dom'
 import './index.less'
 import { Menu } from 'antd';
@@ -10,10 +10,9 @@ import logo from '../../assets/images/logo.png'
 import menuList from '../../config/menuConfig'
 const { SubMenu } = Menu;
 const LeftNav = (props) => {
-    // const [state, setState] = useState({ collapsed: false })
     // 得到当前请求的路由路径
     const path = props.location.pathname
-    let openKey
+    const [openKey, setOpenKey] = useState([])
     //根据menu的数据数组生成对应的标签数组
     const getMenuNodes = (menuList) => {
         return menuList.map(item => {
@@ -28,18 +27,19 @@ const LeftNav = (props) => {
                 const cItem = item.children.find(cItem => cItem.key === path)
                 // 如果存在,说明当前item的子列表需要打开
                 if (cItem) {
-                    openKey = item.key
+                    openKey.push(item.key)
                 }
                 return (
-                    <SubMenu key={item.key} icon={item.icon} title={item.title}>
+                    <SubMenu key={item.key} icon={item.icon} title={item.title}>                 
                         {getMenuNodes(item.children)}
                     </SubMenu>
                 )
             }
         })
     }
-    getMenuNodes(menuList)
-
+    // useEffect(() => {
+    //     getMenuNodes(menuList)
+    // }, [menuList])
     return (
         <div className="left-nav">
             <Link to="/" className="left-nav-header">
@@ -52,9 +52,7 @@ const LeftNav = (props) => {
                 mode="inline"
                 theme="dark"
             >
-                {
-                    getMenuNodes(menuList)
-                }
+                { getMenuNodes(menuList) }
             </Menu>
         </div>
     )
