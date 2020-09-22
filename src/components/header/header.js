@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { formateDate } from '../../utils/dataUtils'
 import memoryUtils from '../../utils/memoryUtils'
 import storageUtils from '../../utils/storageUtils'
-import { reqWeather, reqCity } from '../../api'
+// import { reqWeather, reqCity } from '../../api'
+import { reqWeather } from '../../api'
 import { withRouter } from 'react-router-dom'
 import menuList from '../../config/menuConfig'
 import { Modal } from 'antd'
@@ -14,7 +15,7 @@ const Header = (props) => {
     const [currentTime, setCurrentTime] = useState(formateDate(Date.now()))
     const [dayPictureUrl, setDayPictureUrl] = useState('')
     const [weather, setWeather] = useState('')
-    const [title, setTitle] = useState('')
+    let [title, setTitle] = useState('')
     let timeId
     // 每隔一秒获取当前时间,并更新状态数据currenttime
     const getTime = () => {
@@ -23,32 +24,38 @@ const Header = (props) => {
             setCurrentTime(currentTime)
         }, 1000)
     }
-
+    useEffect(() => {
+        getTime()
+    }, [currentTime])
     //获取当前天气，并更新状态数据 dayPictureUrl weather
     const getWeather = async () => {
-        const city = await reqCity()
-        const { dayPictureUrl, weather } = await reqWeather(city.cname)
+        const { dayPictureUrl, weather } = await reqWeather('上饶')
         setDayPictureUrl(dayPictureUrl)
         setWeather(weather)
     }
-
+    useEffect(() => {
+        getWeather()
+    },[dayPictureUrl,weather])
     //动态得到当前的标题
     const getTitle = () => {
         const path = props.location.pathname
-        let title
+        let title1
         menuList.forEach(item => {
             //如果当前item对象的key与path一样，item 的 title就是需要显示的title
             if (item.key === path) {
-                title = item.title
+                title1 = item.title
             } else if (item.children) {
                 const cItem = item.children.find(cItem => cItem.key === path)
                 if (cItem) {
-                    title = cItem.title
+                    title1 = cItem.title
                 }
             }
         })
-        setTitle(title)
+        setTitle(title1)
     }
+    useEffect(() => {
+        getTitle()
+    },[title])
     const logOut = () => {
         confirm({
             title: '是否退出登录',
@@ -65,13 +72,6 @@ const Header = (props) => {
             },
         });
     }
-    useEffect(() => {
-        getTime()
-        getWeather()
-    },[])
-    useEffect(() => {
-        getTitle()
-    })
     const username = memoryUtils.user.username
     return (
         <div className="header">
