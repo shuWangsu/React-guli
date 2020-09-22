@@ -61,3 +61,12 @@ export const reqWeather = (city) => {
     })
   })
 }
+
+//获取一级/二级分类的列表
+export const reqCategorys = (parentId) => ajax(baseURL + '/manage/category/list', { parentId })
+
+//添加分类
+export const reqAddCategory = (categoryName, parentId) => ajax(baseURL + '/manage/category/add', { categoryName, parentId }, 'POST')
+
+//更新分类
+export const reqUpdateCategory = ({ categoryId, categoryName }) => ajax(baseURL + '/manage/category/update', { categoryId, categoryName }, 'POST')
