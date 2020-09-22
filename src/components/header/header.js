@@ -15,7 +15,7 @@ const Header = (props) => {
     const [currentTime, setCurrentTime] = useState(formateDate(Date.now()))
     const [dayPictureUrl, setDayPictureUrl] = useState('')
     const [weather, setWeather] = useState('')
-    let [title, setTitle] = useState('')
+    const [title, setTitle] = useState('')
     let timeId
     // 每隔一秒获取当前时间,并更新状态数据currenttime
     const getTime = () => {
@@ -35,27 +35,25 @@ const Header = (props) => {
     }
     useEffect(() => {
         getWeather()
-    },[dayPictureUrl,weather])
+    }, [dayPictureUrl, weather])
     //动态得到当前的标题
     const getTitle = () => {
         const path = props.location.pathname
-        let title1
         menuList.forEach(item => {
             //如果当前item对象的key与path一样，item 的 title就是需要显示的title
             if (item.key === path) {
-                title1 = item.title
+                setTitle(item.title)
             } else if (item.children) {
                 const cItem = item.children.find(cItem => cItem.key === path)
                 if (cItem) {
-                    title1 = cItem.title
+                    setTitle(cItem.title)
                 }
             }
         })
-        setTitle(title1)
     }
     useEffect(() => {
         getTitle()
-    },[title])
+    }, [props.location.pathname])
     const logOut = () => {
         confirm({
             title: '是否退出登录',
