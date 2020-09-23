@@ -28,12 +28,12 @@ const Category = (props) => {
   //初始化table所有列的数组
   const initColumns = async () => {
     //在发请求前,显示loading
-    // setLoading(true)
+    setLoading(true)
     //异步获取一级分类列表
-    console.log('aass')
+    console.log('aass11111')
     const result = await reqCategorys('0')
     //在请求完成后,获取数据
-    // setLoading(false)
+    setLoading(false)
     if (result.status === 0) {
       const categorys = result.data
       setCategorys(categorys)
@@ -52,7 +52,7 @@ const Category = (props) => {
         bordered
         rowKey='_id'
         pagination={{ defaultPageSize: 8, showQuickJumper: true }}
-         />
+        loading={loading} />
     </Card>
   )
 }
