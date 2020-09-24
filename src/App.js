@@ -1,21 +1,21 @@
-import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+/**
+ * 应用的根组件
+ */
+import React, { Component } from "react";
+import { BrowserRouter, Route, Switch } from 'react-router-dom'
 
-class App extends Component {
-  render() {
+import Login from './pages/login/login'
+import Admin from './pages/admin/admin'
+// import 'antd/dist/antd.css';
+export default class App extends Component {
+  render () {
     return (
-      <div className="App">
-        <div className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h2>Welcome to React</h2>
-        </div>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-        </p>
-      </div>
-    );
+      <BrowserRouter>
+        <Switch>
+          <Route path='/login' component={Login}></Route>
+          <Route path='/' component={Admin}></Route>
+        </Switch>
+      </BrowserRouter>
+    )
   }
 }
-
-export default App;
