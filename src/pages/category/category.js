@@ -13,6 +13,7 @@ const Category = (props) => {
   const [parentName, setParentName] = useState('')
   const [subCategorys, setSubCategorys] = useState([]) //二级分类列表
   const [loading, setLoading] = useState(false) //是否正在获取数据,显示loading
+  
   const columns = [
     {
       title: '分类名称',
