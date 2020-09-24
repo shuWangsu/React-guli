@@ -34,6 +34,7 @@ const Category = (props) => {
   const getCategorys = async () => {
     //在发请求前,显示loading
     setLoading(true)
+    console.log('12345')
     //异步获取一级分类列表
     const result = await reqCategorys(parentId)
     //在请求完成后,获取数据
