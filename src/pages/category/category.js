@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Card, Button, Table, Space, message } from 'antd'
+import { Card, Button, Table, Space, message, Modal } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import { reqCategorys } from '../../api/index'
 import LinkButton from '../../components/link-button'
@@ -13,6 +13,7 @@ const Category = (props) => {
   const [parentName, setParentName] = useState('')
   const [subCategorys, setSubCategorys] = useState([]) //二级分类列表
   const [loading, setLoading] = useState(false) //是否正在获取数据,显示loading
+  const [showStatus, setStatus] = useState(0)
   
   const columns = [
     {
@@ -34,8 +35,6 @@ const Category = (props) => {
   const getCategorys = async () => {
     //在发请求前,显示loading
     setLoading(true)
-    console.log('12345')
-    console.log('123456789')
     //异步获取一级分类列表
     const result = await reqCategorys(parentId)
     //在请求完成后,获取数据
@@ -57,6 +56,12 @@ const Category = (props) => {
   useEffect(() => {
     getCategorys()
   }, [])
+  // 显示一级分类列表
+  const showFirstCategorys = () => {
+    setParentId('0')
+    setParentName('')
+    setSubCategorys([])
+  }
   // 显示二级分类
   const showSubCategorys = async (record) => {
     // 更新状态
@@ -66,7 +71,7 @@ const Category = (props) => {
   useEffect(() => {
     const changeTitle = parentId === '0' ? '一级分类列表' : (
       <Space>
-        <LinkButton>一级分类列表</LinkButton>
+        <LinkButton onClick={showFirstCategorys}>一级分类列表</LinkButton>
         <ArrowRightOutlined />
         <span>{parentName}</span>
       </Space>
@@ -84,6 +89,26 @@ const Category = (props) => {
         pagination={{ defaultPageSize: 8, showQuickJumper: true }}
         loading={loading}
       />
+      <Modal
+          title="添加分类"
+          visible={this.state.visible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+        >
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Modal>
+        <Modal
+          title="修改分类"
+          visible={this.state.visible}
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+        >
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Modal>
     </Card>
   )
 }
