@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { Card, Button, Table, Space, message, Modal } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
-import { reqCategorys } from '../../api/index'
+import { reqCategorys, reqUpdateCategory, reqAddCategory } from '../../api/index'
 import LinkButton from '../../components/link-button'
 import { ArrowRightOutlined } from '@ant-design/icons'
 import AddForm from './add-form'
+import UpdateForm from './update-form'
 // 商品分类路由
 const Category = (props) => {
   const [title, setTitle] = useState('一级分类列表') //card左侧
@@ -16,7 +17,9 @@ const Category = (props) => {
   const [loading, setLoading] = useState(false) //是否正在获取数据,显示loading
   //标识添加/更新的确认框 0:都不显示,1:显示添加,2:显示更新
   const [showStatus, setShowStatus] = useState(0)
-
+  const [categoryName, setCategoryName] = useState({})  //修改分类对象-》传到子组件
+  const childRef = useRef()
+  const saveNameRef = useRef()
   const columns = [
     {
       title: '分类名称',
@@ -90,16 +93,55 @@ const Category = (props) => {
     setShowStatus(2)
   }
   // 响应点击取消:隐藏确认框
-  const handleCancel = () => {
+  const handleCancel = (status) => {
+    if (status === 1) {
+      saveNameRef.current.initCategoryName()
+    } else if (status === 2) {
+      childRef.current.setCategoryName()
+    }
     setShowStatus(0)
   }
   // 添加分类
   const addCategory = () => {
-    setShowStatus(0)
+    saveNameRef.current.onFinish()
+  }
+  const trans = async (name) => {
+    if (name.trim() !== '') {
+      // 1.发请求更新分类
+      const categoryId = categoryName._id
+      const result = await reqUpdateCategory({ categoryId, categoryName: name })
+      // 2.重新显示列表
+      if (result.status === 0) {
+        getCategorys()
+      } else {
+        message.error('更新分类失败')
+      }
+      //隐藏确认框
+      setShowStatus(0)
+    } else {
+      message.error('修改分类不能为空!')
+    }
+  }
+  const addCategoryName = async (name='', ID) => {
+    if (name.trim() !== '') {
+      const result = await reqAddCategory(name, ID)
+      if (result.status === 0) {
+        // 添加的分类是当前选中的分类
+        if (parentId === ID) {
+          // 重新获取当前分类列表显示
+          getCategorys()
+        }
+      } else {
+        message.error('添加分类失败')
+      }
+      setShowStatus(0)
+    } else {
+      message.error('添加分类不能为空!')
+    }
   }
   //修改分类
   const updateCategory = () => {
-    setShowStatus(0)
+    childRef.current.onFinish()
   }
   return (
     <Card title={title} extra={extra}>
@@ -109,22 +151,27 @@ const Category = (props) => {
         bordered
         rowKey='_id'
         pagination={{ defaultPageSize: 8, showQuickJumper: true }}
-        loading={loading}
-      />
+        loading={loading} />
       <Modal
         title="添加分类"
         visible={showStatus === 1}
         onOk={addCategory}
-        onCancel={handleCancel}
-      >
-        <AddForm />
+        onCancel={() => { handleCancel(showStatus) }} >
+        <AddForm
+          categorys={categorys}
+          parentId={parentId}
+          saveForm={(addName, ID) => { addCategoryName(addName, ID) }}
+          ref={saveNameRef} />
       </Modal>
       <Modal
         title="修改分类"
         visible={showStatus === 2}
         onOk={updateCategory}
-        onCancel={handleCancel}
-      >
+        onCancel={() => { handleCancel(showStatus) }} >
+        <UpdateForm
+          categoryName={categoryName}
+          setForm={(name) => { trans(name) }}
+          ref={childRef} />
       </Modal>
     </Card>
   )
