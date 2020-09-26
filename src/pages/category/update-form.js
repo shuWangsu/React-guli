@@ -29,7 +29,7 @@ const UpdateForm = (props, ref) => {
                 rules={[
                     {
                         required: true,
-                        message: 'Please input categoryName!',
+                        message: '分类名称不能为空!',
                     },
                 ]}>
                 <Input placeholder='请输入分类名称'></Input>

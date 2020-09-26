@@ -9,7 +9,7 @@ import UpdateForm from './update-form'
 // 商品分类路由
 const Category = (props) => {
   const [title, setTitle] = useState('一级分类列表') //card左侧
-  const [extra, setExtra] = useState(<Button type="primary" icon={<PlusOutlined />} onClick={() => showAdd()}>添加</Button>)
+  const [extra] = useState(<Button type="primary" icon={<PlusOutlined />} onClick={() => showAdd()}>添加</Button>)
   const [categorys, setCategorys] = useState([]) //一级分类列表
   const [parentId, setParentId] = useState('0')  //当前需要显示的分类列表的父分类的ID
   const [parentName, setParentName] = useState('')
@@ -30,7 +30,7 @@ const Category = (props) => {
       width: 350,
       render: (record) => ( // 
         <Space size="middle">
-          <LinkButton onClick={() => showUpdate()}>修改分类</LinkButton>
+          <LinkButton onClick={() => showUpdate(record)}>修改分类</LinkButton>
           {parentId === '0' ? <LinkButton onClick={() => { showSubCategorys(record) }}>查看子分类</LinkButton> : null}
         </Space>
       )
@@ -89,7 +89,9 @@ const Category = (props) => {
     setShowStatus(1)
   }
   // 点击修改分类
-  const showUpdate = () => {
+  const showUpdate = (record) => {
+    // 保存分类对象
+    setCategoryName(record)
     setShowStatus(2)
   }
   // 响应点击取消:隐藏确认框
@@ -139,6 +141,14 @@ const Category = (props) => {
       message.error('添加分类不能为空!')
     }
   }
+  // const trans = async (name) => {
+  //   // 1.发请求更新分类
+  //   const categoryId = categoryName._id
+  //   const result = await reqUpdateCategory({categoryId,categoryName:name})
+  //   console.log(result)
+  //   // 2.重新显示列表
+  //   getCategorys()
+  // }
   //修改分类
   const updateCategory = () => {
     childRef.current.onFinish()
