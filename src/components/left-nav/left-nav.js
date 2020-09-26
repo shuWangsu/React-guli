@@ -1,7 +1,7 @@
 /**
  * 左侧导航的组件
  */
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Link, withRouter } from 'react-router-dom'
 import './index.less'
 import { Menu } from 'antd';
@@ -12,7 +12,7 @@ const { SubMenu } = Menu;
 const LeftNav = (props) => {
     // 得到当前请求的路由路径
     const path = props.location.pathname
-    const [openKey, setOpenKey] = useState([])
+    const [openKey] = useState([])
     //根据menu的数据数组生成对应的标签数组
     const getMenuNodes = (menuList) => {
         return menuList.map(item => {
