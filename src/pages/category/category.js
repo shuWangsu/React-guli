@@ -141,14 +141,6 @@ const Category = (props) => {
       message.error('添加分类不能为空!')
     }
   }
-  // const trans = async (name) => {
-  //   // 1.发请求更新分类
-  //   const categoryId = categoryName._id
-  //   const result = await reqUpdateCategory({categoryId,categoryName:name})
-  //   console.log(result)
-  //   // 2.重新显示列表
-  //   getCategorys()
-  // }
   //修改分类
   const updateCategory = () => {
     childRef.current.onFinish()
