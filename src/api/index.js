@@ -70,3 +70,16 @@ export const reqAddCategory = (categoryName, parentId) => ajax(baseURL + '/manag
 
 //更新分类
 export const reqUpdateCategory = ({ categoryId, categoryName }) => ajax(baseURL + '/manage/category/update', { categoryId, categoryName }, 'POST')
+
+// 获取商品分页列表
+export const reqProducts = (pageNum, pageSize) => ajax(baseURL + '/manage/product/list', { pageNum, pageSize })
+
+/*
+  搜索商品分页列表(根据商品名称/商品描述)
+  serachType:搜索类型， productName/productDesc
+*/ 
+export const reqSearchProducts = ({ pageNum, pageSize, searchName, searchType }) => ajax(baseURL + '/manage/product/search', {
+  pageNum,
+  pageSize,
+  [searchType]: searchName
+})
