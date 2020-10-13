@@ -65,11 +65,10 @@ const ProductHome = (props) => {
     },
     {
       title: '操作',
-      dataIndex: 'product',
       render: (product) => {
         return (
           <span>
-            <LinkButton>详情</LinkButton>
+            <LinkButton onClick={ () => props.history.push('/product/detail', { product })}>详情</LinkButton>
             <LinkButton>修改</LinkButton>
           </span>
         )

@@ -83,3 +83,6 @@ export const reqSearchProducts = ({ pageNum, pageSize, searchName, searchType })
   pageSize,
   [searchType]: searchName
 })
+
+//获取一个分类
+export const reqCategory = (categoryId) => ajax(baseURL + '/manage/category/info', {categoryId})
