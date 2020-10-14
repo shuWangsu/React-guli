@@ -11,8 +11,11 @@ import menuList from '../../config/menuConfig'
 const { SubMenu } = Menu;
 const LeftNav = (props) => {
     // 得到当前请求的路由路径
-    const path = props.location.pathname
+    let path = props.location.pathname
     const [openKey] = useState([])
+    if (path.indexOf('/product') === 0){  //当前请求的是商品或其子路由界面
+        path = '/product'
+    }
     //根据menu的数据数组生成对应的标签数组
     const getMenuNodes = (menuList) => {
         return menuList.map(item => {
