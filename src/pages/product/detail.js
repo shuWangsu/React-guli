@@ -11,7 +11,7 @@ const Item = List.Item
  */
 
 const ProductDetail = (props) => {
-  const [title, setTitle] = useState(
+  const [title] = useState(
     <Space>
       <LinkButton>
         <ArrowLeftOutlined style={{ fontSize: 20 }} onClick={() => props.history.goBack()} />

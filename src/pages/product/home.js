@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react'
-import { Card, Select, Input, Button, Table, } from 'antd'
+import { Card, Select, Input, Button, Table, message, } from 'antd'
 import { PlusOutlined } from '@ant-design/icons'
 import LinkButton from '../../components/link-button/index'
-import { reqProducts, reqSearchProducts } from '../../api/index'
+import { reqProducts, reqSearchProducts, reqUpdateStatus } from '../../api/index'
 import { PAGE_SIZE } from '../../utils/contant'
 const { Option } = Select
 /**
@@ -15,6 +15,7 @@ const ProductHome = (props) => {
   const [loading, setLoading] = useState(false)
   const [searchName, setSearchName] = useState('')  //搜索关键字
   const [searchType, setSearchType] = useState('productName')  //搜索类型
+  const [pageNum, setPageNum] = useState(1)
   const title = (
     <span>
       <Select style={{ width: 130 }} onChange={(value) => { setSearchType(value) }} value={searchType}>
@@ -31,7 +32,10 @@ const ProductHome = (props) => {
     </span>
   )
   const extra = (
-    <Button type='primary' icon={<PlusOutlined />}>添加商品</Button>
+    <Button 
+      type='primary' 
+      icon={<PlusOutlined />}
+      onClick={() => props.history.push('/product/addupdate')} >添加商品</Button>
   )
   const columns = [
     {
@@ -52,12 +56,19 @@ const ProductHome = (props) => {
     },
     {
       title: '状态',
-      dataIndex: 'status',
-      render: (status) => {
+      // dataIndex: 'status',
+      render: (product) => {
+        const {status, _id} = product
         return (
           <span>
-            <Button type='primary' style={{ marginRight: 15 }}>下架</Button>
-            <span>在售</span>
+            <Button 
+              type='primary' 
+              style={{ marginRight: 15 }} 
+              onClick={() => updateStatus(_id,status === 1 ? 2 : 1)}
+              >
+                {status === 1 ? '下架' : '上架'}
+              </Button>
+            <span>{status === 1 ? '在售' : '已下架'}</span>
           </span>
         )
       },
@@ -78,6 +89,7 @@ const ProductHome = (props) => {
   ]
   const getProducts = async (pageNum) => {
     let result
+    setPageNum(pageNum)
     setLoading(true)
     if (searchName !== '') { //如果搜索关键字有值，说明我们要做搜索分页
       result = await reqSearchProducts({ pageNum, pageSize: PAGE_SIZE, searchName, searchType })
@@ -89,6 +101,14 @@ const ProductHome = (props) => {
       const { total, list } = result.data
       setTotal(total)
       setProducts(list)
+    }
+  }
+  // 更新指定商品装态
+  const updateStatus = async (productId, status) => {
+    const result = await reqUpdateStatus(productId, status)
+    if (result.status === 0) {
+      message.success('更新商品成功')
+      getProducts(pageNum)
     }
   }
   useEffect(() => {
