@@ -4,6 +4,7 @@ import { ArrowLeftOutlined } from '@ant-design/icons'
 import LinkButton from '../../components/link-button'
 import { reqCategorys } from '../../api'
 import './product.less'
+import { useForm } from 'antd/lib/form/Form'
 const { Item } = Form
 const { TextArea } = Input
 /**
@@ -16,11 +17,12 @@ const ProductAddUpdate = (props) => {
       <LinkButton>
         <ArrowLeftOutlined style={{ fontSize: 20 }} onClick={() => props.history.goBack()} />
       </LinkButton>
-      <span>添加商品</span>
+      <span>{props.location.state ? '修改商品' : '添加商品'}</span>
     </Space>
   )
-
+  const [changeValue, setChangeValue] = useState({})
   const [options, setOptions] = useState([])
+  // let changeValue = {}
   const layout = {
     labelCol: { span: 2 },
     wrapperCol: { span: 10 },
@@ -48,13 +50,13 @@ const ProductAddUpdate = (props) => {
     if (result.status === 0) {
       const categorys = result.data
       // 判断 如果还是一级分类列表
-      if(parentId === '0') {
+      if (parentId === '0') {
         initOptions(categorys)
-      }else {   //二级列表
+      } else {   //二级列表
         // 返回二级列表 ==》 当前async函数返回的promise就会成功且value为categorys
         return categorys
       }
-      
+
     }
   }
   const loadData = async selectedOptions => {
@@ -82,14 +84,26 @@ const ProductAddUpdate = (props) => {
   const onChange = (value, selectedOptions) => {
     console.log(value, selectedOptions)
   }
+  const [form] = useForm()
+  // 获取从修改跳转过来的信息
+  const getChangeValue = () => {
+    const value = props.location.state || {}
+    // setChangeValue(value)
+    form.setFieldsValue({ 'productName': value.name })
+    form.setFieldsValue({ 'productDesc': value.desc })
+    form.setFieldsValue({ 'productPrice': value.price })
+  }
   useEffect(() => {
     getCategorys('0')
-  },[])
+    getChangeValue()
+  }, [])
   return (
     <Card title={title}>
       <Form
         {...layout}
-        onFinish={onFinish} >
+        onFinish={onFinish}
+        form={form}
+        name="kkk" >
         <Item
           label="商品名称: "
           name="productName"
@@ -99,11 +113,12 @@ const ProductAddUpdate = (props) => {
               message: '商品名称不能为空!',
             },
           ]} >
-          <Input placeholder='请输入商品名称' />
+          <Input placeholder='请输入商品名称' value='1' />
         </Item>
         <Item
           label="商品描述: "
           name="productDesc"
+          // initialValue={changeValue.desc}
           rules={[
             {
               required: true,
@@ -115,6 +130,7 @@ const ProductAddUpdate = (props) => {
         <Item
           label="商品价格: "
           name="productPrice"
+          // initialValue={changeValue.price}
           rules={[
             {
               required: true,
@@ -134,7 +150,15 @@ const ProductAddUpdate = (props) => {
           ]}>
           <Input type='number' placeholder='请输入商品价格' addonAfter='元' />
         </Item>
-        <Item label="商品分类: ">
+        <Item
+          label="商品分类: "
+          name="productFenlei"
+          rules={[
+            {
+              required: true,
+              message: '必须选择商品分类',
+            }
+          ]}>
           <Cascader
             options={options}
             loadData={loadData}

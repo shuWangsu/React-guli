@@ -80,7 +80,7 @@ const ProductHome = (props) => {
         return (
           <span>
             <LinkButton onClick={ () => props.history.push('/product/detail', { product })}>详情</LinkButton>
-            <LinkButton>修改</LinkButton>
+            <LinkButton onClick={ () => props.history.push('/product/addupdate', product) }>修改</LinkButton>
           </span>
         )
       },
