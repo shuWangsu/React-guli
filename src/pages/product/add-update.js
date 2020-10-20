@@ -5,6 +5,7 @@ import LinkButton from '../../components/link-button'
 import { reqCategorys } from '../../api'
 import './product.less'
 import { useForm } from 'antd/lib/form/Form'
+import PicturesWall from './pictures-wall'
 const { Item } = Form
 const { TextArea } = Input
 /**
@@ -39,23 +40,23 @@ const ProductAddUpdate = (props) => {
       label: c.name,
       isLeaf: false,    //不是叶子
     }))
-    console.log('kkk',options)
+    console.log('kkk', options)
     // 如果是一个二级分类商品的更新
-    const {pCategoryId} = props.location.state
+    const { pCategoryId } = props.location.state
     if (props.location.state && pCategoryId !== '0') {
       // 获取对应的二级分类列表
       const subCategorys = await getCategorys(pCategoryId)
       // 生成二级下拉列表的options
       const childOptions = subCategorys.map(c => ({
-        value:c._id,
-        label:c.name,
-        isLeaf:true
+        value: c._id,
+        label: c.name,
+        isLeaf: true
       }))
       // 找到当前商品对应的一级option对象
       const targetOption = options.find(option => option.value === pCategoryId)
       // 关联对应的一级的option上
       targetOption.children = childOptions
-      console.log('xxx',options)
+      console.log('xxx', options)
     }
     setOptions(options)
   }
@@ -106,8 +107,8 @@ const ProductAddUpdate = (props) => {
   // 获取从修改跳转过来的信息
   const getChangeValue = () => {
     const value = props.location.state || {}
-    const { pCategoryId, categoryId} = value
-    if (value !== {}){
+    const { pCategoryId, categoryId } = value
+    if (value !== {}) {
       if (pCategoryId === '0') {
         arrIds.push(categoryId)
       } else {
@@ -117,9 +118,9 @@ const ProductAddUpdate = (props) => {
       form.setFieldsValue({ 'productName': value.name })
       form.setFieldsValue({ 'productDesc': value.desc })
       form.setFieldsValue({ 'productPrice': value.price })
-      form.setFieldsValue({'productFenlei': arrIds})
+      form.setFieldsValue({ 'productFenlei': arrIds })
     }
-    
+
   }
   useEffect(() => {
     getCategorys('0')
@@ -165,7 +166,7 @@ const ProductAddUpdate = (props) => {
               message: '商品价格不能为空!',
             },
             ({ getFieldValue }) => ({
-              validator (rule, value) {
+              validator(rule, value) {
                 if (value && value * 1 > 0) {
                   return Promise.resolve()
                 }
@@ -195,7 +196,7 @@ const ProductAddUpdate = (props) => {
           />
         </Item>
         <Item label="商品图片: ">
-          <Input type='number' placeholder='请输入商品价格' addonAfter='元' />
+          <PicturesWall />
         </Item>
         <Item label="商品详情: ">
           <Input type='number' placeholder='请输入商品价格' addonAfter='元' />
