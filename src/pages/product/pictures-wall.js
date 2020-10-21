@@ -1,46 +1,9 @@
 import React, { useState } from 'react'
-import { Upload, Modal } from 'antd';
+import { Upload, Modal, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
 const PicturesWall = (props) => {
-    const [fileList, setFileList] = useState([
-        {
-            uid: '-1',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-2',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-3',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-4',
-            name: 'image.png',
-            status: 'done',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-xxx',
-            percent: 50,
-            name: 'image.png',
-            status: 'uploading',
-            url: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
-        },
-        {
-            uid: '-5',
-            name: 'image.png',
-            status: 'error',
-        },
-    ])
+    const [fileList, setFileList] = useState([])
     const [previewVisible, setPreviewVisible] = useState(false)
     const [previewImage, setPreviewImage] = useState('')
     const [previewTitle, setPreviewTitle] = useState('')
@@ -69,7 +32,25 @@ const PicturesWall = (props) => {
      * file:当前操作的图片文件（上传/删除）
      */
     const handleChange = ({ file, fileList }) => {
+        // 上传成功，将当前上传的file信息修正（name,url）
+        if (file.status === 'done') {
+            const result = file.response
+            if (result.status === 0) {
+                message.success('上传图片成功')
+                const { name, url } = result.data
+                file = fileList[fileList.length - 1]
+                file.name = name
+                file.url = url
+            } else {
+                message.error('上传图片失败')
+            }
+        }
         setFileList(fileList)
+    }
+
+    // 获取所有已上传图片文件名的数组
+    const getImgs = () => {
+        return fileList.map(file => file.name)
     }
     const uploadButton = (
         <div>
@@ -88,7 +69,7 @@ const PicturesWall = (props) => {
                 onPreview={handlePreview}
                 onChange={handleChange}
             >
-                {fileList.length >= 8 ? null : uploadButton}
+                {fileList.length >= 3 ? null : uploadButton}
             </Upload>
             <Modal
                 visible={previewVisible}
