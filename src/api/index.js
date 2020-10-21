@@ -77,7 +77,7 @@ export const reqProducts = (pageNum, pageSize) => ajax(baseURL + '/manage/produc
 /*
   搜索商品分页列表(根据商品名称/商品描述)
   serachType:搜索类型， productName/productDesc
-*/ 
+*/
 export const reqSearchProducts = ({ pageNum, pageSize, searchName, searchType }) => ajax(baseURL + '/manage/product/search', {
   pageNum,
   pageSize,
@@ -85,8 +85,11 @@ export const reqSearchProducts = ({ pageNum, pageSize, searchName, searchType })
 })
 
 //获取一个分类
-export const reqCategory = (categoryId) => ajax(baseURL + '/manage/category/info', {categoryId})
+export const reqCategory = (categoryId) => ajax(baseURL + '/manage/category/info', { categoryId })
 
 // 更新商品的装态（上架/下架）
 
-export const reqUpdateStatus = (productId, status) => ajax(baseURL + '/manage/product/updateStatus', { productId, status}, 'POST')
+export const reqUpdateStatus = (productId, status) => ajax(baseURL + '/manage/product/updateStatus', { productId, status }, 'POST')
+
+//删除上传的图片
+export const reqDeleteImg = (name) => ajax(baseURL + '/manage/img/delete', { name }, 'POST')

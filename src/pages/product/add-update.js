@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Card, Space, Form, Input, Cascader, Upload, Button } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import LinkButton from '../../components/link-button'
@@ -11,8 +11,8 @@ const { TextArea } = Input
 /**
  * product 的添加和更新的子路由组件
  */
-
 const ProductAddUpdate = (props) => {
+  const pictureWall = useRef()
   const [title] = useState(
     <Space>
       <LinkButton>
@@ -30,6 +30,7 @@ const ProductAddUpdate = (props) => {
   }
   // 点击提交触发onfinish
   const onFinish = (values) => {
+    console.log(pictureWall.current.getImgs())
     console.log('Success:', values)
   }
 
@@ -40,7 +41,6 @@ const ProductAddUpdate = (props) => {
       label: c.name,
       isLeaf: false,    //不是叶子
     }))
-    console.log('kkk', options)
     // 如果是一个二级分类商品的更新
     const { pCategoryId } = props.location.state
     if (props.location.state && pCategoryId !== '0') {
@@ -56,7 +56,6 @@ const ProductAddUpdate = (props) => {
       const targetOption = options.find(option => option.value === pCategoryId)
       // 关联对应的一级的option上
       targetOption.children = childOptions
-      console.log('xxx', options)
     }
     setOptions(options)
   }
@@ -196,7 +195,7 @@ const ProductAddUpdate = (props) => {
           />
         </Item>
         <Item label="商品图片: ">
-          <PicturesWall />
+          <PicturesWall ref={pictureWall} imgs={props.location.state.imgs} />
         </Item>
         <Item label="商品详情: ">
           <Input type='number' placeholder='请输入商品价格' addonAfter='元' />
@@ -216,3 +215,22 @@ export default ProductAddUpdate
  * 1.子组件调用父组件的方法：将父组件的方法以函数属性的形式传递给子组件，子组件就可以调用
  * 2.父组件调用子组件的方法：在父组件中通过 ref 得到子组件标签对象（也就是组件对象），调用其方法
  */
+
+ /**
+  * 使用ref （class组件）
+  * 1.创建ref容器：this.pw = React.createRef()
+  * 2.将ref容器交给需要获取的标签元素： <Picture ref={this.pw} />
+  * 3.通过ref容器读取标签元素 ：this.pw.current.xxxx
+  * 
+  * 函数组件
+  * 1.父组件 在函数组件类定义   const pictureWall = useRef()
+  * 2.传给子组件：<PicturesWall ref={pictureWall}/>
+  * 3.子组件使用forwardRef包裹  export default forwardRef(PicturesWall)
+  * 4.使用useImperativeHandle暴露要传给父组件的内容
+  *  useImperativeHandle(ref, () => ({
+        // 获取所有已上传图片文件名的数组
+        getImgs: () => {
+            return fileList.map(file => file.name)
+        }
+    }))
+  */
