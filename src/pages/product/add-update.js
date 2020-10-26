@@ -6,6 +6,7 @@ import { reqCategorys } from '../../api'
 import './product.less'
 import { useForm } from 'antd/lib/form/Form'
 import PicturesWall from './pictures-wall'
+import RichTextEditor from './rich-text-editor'
 const { Item } = Form
 const { TextArea } = Input
 /**
@@ -13,6 +14,7 @@ const { TextArea } = Input
  */
 const ProductAddUpdate = (props) => {
   const pictureWall = useRef()
+  const richTextEditor = useRef()
   const [title] = useState(
     <Space>
       <LinkButton>
@@ -30,8 +32,8 @@ const ProductAddUpdate = (props) => {
   }
   // 点击提交触发onfinish
   const onFinish = (values) => {
-    console.log(pictureWall.current.getImgs())
-    console.log('Success:', values)
+    const imgs = pictureWall.current.getImgs()
+    const details = richTextEditor.current.getDetail()
   }
 
   // 根据categorys数组生成options数组
@@ -197,10 +199,10 @@ const ProductAddUpdate = (props) => {
         <Item label="商品图片: ">
           <PicturesWall ref={pictureWall} imgs={props.location.state.imgs} />
         </Item>
-        <Item label="商品详情: ">
-          <Input type='number' placeholder='请输入商品价格' addonAfter='元' />
+        <Item label="商品详情: " labelCol={{span:2}} wrapperCol={{span:20}}>
+          <RichTextEditor ref={richTextEditor} details={props.location.state.detail} />
         </Item>
-        <Item label="商品详情: ">
+        <Item>
           <Button type="primary" htmlType='submit'>提交</Button>
         </Item>
       </Form>

@@ -99,6 +99,7 @@ const ProductHome = (props) => {
     setLoading(false)
     if (result.status === 0) {
       const { total, list } = result.data
+      console.log('list',list)
       setTotal(total)
       setProducts(list)
     }
