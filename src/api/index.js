@@ -93,3 +93,11 @@ export const reqUpdateStatus = (productId, status) => ajax(baseURL + '/manage/pr
 
 //删除上传的图片
 export const reqDeleteImg = (name) => ajax(baseURL + '/manage/img/delete', { name }, 'POST')
+
+// 添加商品
+
+export const reqAddOrUpdateProduct = (product) => ajax(baseURL + '/manage/product/' + (product._id ? 'update' : 'add'), product, 'POST')
+
+// 修改商品
+
+// export const reqUpdateProduct = (product) => ajax(baseURL + '/manage/product/update', product, 'POST')
