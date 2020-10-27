@@ -32,6 +32,7 @@ const PicturesWall = (props, ref) => {
     /**
      * @param {fileList} 所有已上传图片文件对象的数组
      * file:当前操作的图片文件（上传/删除）
+     * 
      */
     const handleChange = async ({ file, fileList }) => {
         // 上传成功，将当前上传的file信息修正（name,url）

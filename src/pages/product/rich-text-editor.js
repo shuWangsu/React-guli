@@ -33,8 +33,8 @@ const RichTextEditor = (props, ref) => {
                 xhr.send(data)
                 xhr.addEventListener('load', () => {
                     const response = JSON.parse(xhr.responseText)
-                    const url = response.data.url //得到图片的URL
-                    resolve({ data: { link: url } })
+                    const url = response.data.url.slice(29) //得到图片的URL
+                    resolve({ data: { link: 'http://39.100.225.255:5000/upload/' + url } })
                 })
                 xhr.addEventListener('error', () => {
                     const error = JSON.parse(xhr.responseText)

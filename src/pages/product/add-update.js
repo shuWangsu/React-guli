@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { Card, Space, Form, Input, Cascader, Upload, Button } from 'antd'
+import { Card, Space, Form, Input, Cascader, Upload, Button, message } from 'antd'
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import LinkButton from '../../components/link-button'
-import { reqCategorys } from '../../api'
+import { reqAddOrUpdateProduct, reqCategorys } from '../../api'
 import './product.less'
 import { useForm } from 'antd/lib/form/Form'
 import PicturesWall from './pictures-wall'
@@ -30,38 +30,8 @@ const ProductAddUpdate = (props) => {
     labelCol: { span: 2 },
     wrapperCol: { span: 10 },
   }
-  // 点击提交触发onfinish
-  const onFinish = (values) => {
-    const imgs = pictureWall.current.getImgs()
-    const details = richTextEditor.current.getDetail()
-  }
 
-  // 根据categorys数组生成options数组
-  const initOptions = async (categorys) => {
-    const options = categorys.map(c => ({
-      value: c._id,
-      label: c.name,
-      isLeaf: false,    //不是叶子
-    }))
-    // 如果是一个二级分类商品的更新
-    const { pCategoryId } = props.location.state
-    if (props.location.state && pCategoryId !== '0') {
-      // 获取对应的二级分类列表
-      const subCategorys = await getCategorys(pCategoryId)
-      // 生成二级下拉列表的options
-      const childOptions = subCategorys.map(c => ({
-        value: c._id,
-        label: c.name,
-        isLeaf: true
-      }))
-      // 找到当前商品对应的一级option对象
-      const targetOption = options.find(option => option.value === pCategoryId)
-      // 关联对应的一级的option上
-      targetOption.children = childOptions
-    }
-    setOptions(options)
-  }
-  /**
+   /**
    * 获取一级/二级分类列表，并显示
    * @param {*} selectedOptions 
    */
@@ -79,6 +49,33 @@ const ProductAddUpdate = (props) => {
 
     }
   }
+
+  // 根据categorys数组生成options数组
+  const initOptions = async (categorys) => {
+    const options = categorys.map(c => ({
+      value: c._id,
+      label: c.name,
+      isLeaf: false,    //不是叶子
+    }))
+    // 如果是一个二级分类商品的更新
+    const { pCategoryId } = props.location.state || {}
+    if (props.location.state && pCategoryId !== '0') {
+      // 获取对应的二级分类列表
+      const subCategorys = await getCategorys(pCategoryId)
+      // 生成二级下拉列表的options
+      const childOptions = subCategorys.map(c => ({
+        value: c._id,
+        label: c.name,
+        isLeaf: true
+      }))
+      // 找到当前商品对应的一级option对象
+      const targetOption = options.find(option => option.value === pCategoryId)
+      // 关联对应的一级的option上
+      targetOption.children = childOptions
+    }
+    setOptions(options)
+  }
+ 
   const loadData = async selectedOptions => {
     // 得到选择的option对象
     const targetOption = selectedOptions[selectedOptions.length - 1]
@@ -101,15 +98,13 @@ const ProductAddUpdate = (props) => {
     targetOption.loading = false
     setOptions([...options])
   }
-  const onChange = (value, selectedOptions) => {
-    console.log(value, selectedOptions)
-  }
+
   const [form] = useForm()
   // 获取从修改跳转过来的信息
   const getChangeValue = () => {
     const value = props.location.state || {}
     const { pCategoryId, categoryId } = value
-    if (value !== {}) {
+    if (Object.keys(value).length !==0) {
       if (pCategoryId === '0') {
         arrIds.push(categoryId)
       } else {
@@ -121,8 +116,47 @@ const ProductAddUpdate = (props) => {
       form.setFieldsValue({ 'productPrice': value.price })
       form.setFieldsValue({ 'productFenlei': arrIds })
     }
-
   }
+
+  // 点击提交触发onfinish
+  const onFinish = async (values) => {
+    console.log('values', values)
+    const imgs = pictureWall.current.getImgs()
+    const details = richTextEditor.current.getDetail()
+    const { productName, productDesc, productPrice, productFenlei } = values
+    let pCategoryId, categoryId
+    if (productFenlei.length === 1) {
+      pCategoryId = '0'
+      categoryId = productFenlei[0]
+    } else {
+      pCategoryId = productFenlei[0]
+      categoryId = productFenlei[1]
+    }
+    const product = {
+      name: productName,
+      desc: productDesc,
+      price: productPrice,
+      imgs,
+      detail: details,
+      pCategoryId,
+      categoryId
+    }
+
+    // 如果是更新，需要添加_id
+    if (props.location.state) {
+      product._id = props.location.state._id
+    }
+    // 调用接口请求函数去添加/更新
+    const result = await reqAddOrUpdateProduct(product)
+    // 根据结果提示
+    if (result.status === 0) {
+      message.success(`${props.location.state ? '更新' : '添加'}商品成功`)
+      props.history.goBack()
+    } else {
+      message.error(`${props.location.state ? '更新' : '添加'}商品失败`)
+    }
+  }
+
   useEffect(() => {
     getCategorys('0')
     getChangeValue()
@@ -167,7 +201,7 @@ const ProductAddUpdate = (props) => {
               message: '商品价格不能为空!',
             },
             ({ getFieldValue }) => ({
-              validator(rule, value) {
+              validator (rule, value) {
                 if (value && value * 1 > 0) {
                   return Promise.resolve()
                 }
@@ -192,15 +226,13 @@ const ProductAddUpdate = (props) => {
           <Cascader
             options={options}
             loadData={loadData}
-            onChange={onChange}
-            changeOnSelect
           />
         </Item>
         <Item label="商品图片: ">
-          <PicturesWall ref={pictureWall} imgs={props.location.state.imgs} />
+          <PicturesWall ref={pictureWall} imgs={props.location.state ? props.location.state.imgs : null} />
         </Item>
-        <Item label="商品详情: " labelCol={{span:2}} wrapperCol={{span:20}}>
-          <RichTextEditor ref={richTextEditor} details={props.location.state.detail} />
+        <Item label="商品详情: " labelCol={{ span: 2 }} wrapperCol={{ span: 20 }}>
+          <RichTextEditor ref={richTextEditor} details={props.location.state ? props.location.state.detail : null} />
         </Item>
         <Item>
           <Button type="primary" htmlType='submit'>提交</Button>
@@ -218,21 +250,21 @@ export default ProductAddUpdate
  * 2.父组件调用子组件的方法：在父组件中通过 ref 得到子组件标签对象（也就是组件对象），调用其方法
  */
 
- /**
-  * 使用ref （class组件）
-  * 1.创建ref容器：this.pw = React.createRef()
-  * 2.将ref容器交给需要获取的标签元素： <Picture ref={this.pw} />
-  * 3.通过ref容器读取标签元素 ：this.pw.current.xxxx
-  * 
-  * 函数组件
-  * 1.父组件 在函数组件类定义   const pictureWall = useRef()
-  * 2.传给子组件：<PicturesWall ref={pictureWall}/>
-  * 3.子组件使用forwardRef包裹  export default forwardRef(PicturesWall)
-  * 4.使用useImperativeHandle暴露要传给父组件的内容
-  *  useImperativeHandle(ref, () => ({
-        // 获取所有已上传图片文件名的数组
-        getImgs: () => {
-            return fileList.map(file => file.name)
-        }
-    }))
-  */
+/**
+ * 使用ref （class组件）
+ * 1.创建ref容器：this.pw = React.createRef()
+ * 2.将ref容器交给需要获取的标签元素： <Picture ref={this.pw} />
+ * 3.通过ref容器读取标签元素 ：this.pw.current.xxxx
+ *
+ * 函数组件
+ * 1.父组件 在函数组件类定义   const pictureWall = useRef()
+ * 2.传给子组件：<PicturesWall ref={pictureWall}/>
+ * 3.子组件使用forwardRef包裹  export default forwardRef(PicturesWall)
+ * 4.使用useImperativeHandle暴露要传给父组件的内容
+ *  useImperativeHandle(ref, () => ({
+       // 获取所有已上传图片文件名的数组
+       getImgs: () => {
+           return fileList.map(file => file.name)
+       }
+   }))
+ */
