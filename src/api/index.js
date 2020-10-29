@@ -101,3 +101,7 @@ export const reqAddOrUpdateProduct = (product) => ajax(baseURL + '/manage/produc
 // 修改商品
 
 // export const reqUpdateProduct = (product) => ajax(baseURL + '/manage/product/update', product, 'POST')
+
+// 获取所有角色的列表
+
+export const reqRoles = () => ajax(baseURL + 'manage/role/list')
