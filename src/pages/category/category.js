@@ -108,6 +108,7 @@ const Category = (props) => {
     saveNameRef.current.onFinish()
   }
   const trans = async (name) => {
+    console.log('name1', name)
     if (name.trim() !== '') {
       // 1.发请求更新分类
       const categoryId = categoryName._id
@@ -124,7 +125,7 @@ const Category = (props) => {
       message.error('修改分类不能为空!')
     }
   }
-  const addCategoryName = async (name='', ID) => {
+  const addCategoryName = async (name = '', ID) => {
     if (name.trim() !== '') {
       const result = await reqAddCategory(name, ID)
       if (result.status === 0) {

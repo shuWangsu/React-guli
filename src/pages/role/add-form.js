@@ -1,4 +1,4 @@
-import React, { useEffect, useImperativeHandle, forwardRef } from 'react'
+import React, { useImperativeHandle, forwardRef } from 'react'
 import { Form, Input } from 'antd'
 
 const Item = Form.Item
@@ -13,13 +13,9 @@ const AddForm = (props, ref) => {
   useImperativeHandle(ref, () => ({
     // onFinish 就是暴露给父组件的方法
     onFinish: () => {
-      const name = form.getFieldValue('categoryName');
-      const ID = form.getFieldValue('parentId')
-      props.saveForm(name, ID)
-      form.setFieldsValue({ 'categoryName': '' })
-    },
-    initCategoryName: () => {
-      form.setFieldsValue({ 'categoryName': '' })
+      const name = form.getFieldValue('roleName')
+      props.saveForm(name)
+      form.setFieldsValue({ 'roleName': '' })
     }
   }))
   return (
