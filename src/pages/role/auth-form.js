@@ -14,32 +14,28 @@ const AuthForm = (props, ref) => {
     key: '0-1',
     children: menuList
   }])
-  const [checkedKeys, setCheckedKeys] = useState(props.role.menus)
+  const [checkedKeys, setCheckedKeys] = useState()
   useImperativeHandle(ref, () => ({
     // onFinish 就是暴露给父组件的方法
     onFinish: () => {
+      return checkedKeys
+    },
+    resetKeys: () => {
+      setCheckedKeys(props.role.menus)
     }
   }))
-  const getTreeNodes = () => {
-    let list = [{
-      title:'平台权限',
-      key: '0-1',
-      children: menuList
-    }]
-    setTreeList(list)
-    
-  }
 
   const onSelect = (selectedKeys, info) => {
-    console.log('selected', selectedKeys, info);
-  };
+    console.log('selected', selectedKeys, info)
+  }
 
   const onCheck = (checkedKeys, info) => {
-    console.log('onCheck', checkedKeys, info);
-  };
+    // console.log('onCheck', checkedKeys, info)
+    setCheckedKeys(checkedKeys)
+  }
   useEffect(() => {
     setRole(props.role.name)
-    // getTreeNodes()
+    setCheckedKeys(props.role.menus)
   }, [props.role])
   return (
     <Form form={form}>

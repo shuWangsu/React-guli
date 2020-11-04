@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Card, Button, Table, message } from 'antd'
-import { reqRoles, reqAddRole } from '../../api'
+import { reqRoles, reqAddRole, reqUpdateRole } from '../../api'
 import Modal from 'antd/lib/modal/Modal'
 import AddForm from './add-form'
 import AuthForm from './auth-form'
+import memoryUtils from '../../utils/memoryUtils'
+import { formateDate } from '../../utils/dataUtils'
 // 路由
 const Role = (props) => {
     const [roles, setRoles] = useState([]) //所有角色列表
@@ -11,6 +13,7 @@ const Role = (props) => {
     const [columns, setColumns] = useState([])
     const [showStatus, setShowStatus] = useState(0)
     const addRoleName = useRef()
+    const getRoleList = useRef()
     const initColumn = () => {
         setColumns([
             {
@@ -19,11 +22,14 @@ const Role = (props) => {
             },
             {
                 title: '创建时间',
-                dataIndex: 'create_time'
+                dataIndex: 'create_time',
+                render: (create_time) => formateDate(create_time)
+                
             },
             {
                 title: '授权时间',
-                dataIndex: 'auth_time'
+                dataIndex: 'auth_time',
+                render: formateDate
             },
             {
                 title: '授权人',
@@ -52,12 +58,28 @@ const Role = (props) => {
         addRoleName.current.onFinish()
     }
     // 设置角色权限
-    const updateRole = () => {
+    const updateRole = async () => {
         setShowStatus(0)
+        // 得到最新的权限信息
+        const list = getRoleList.current.onFinish()
+        role.menus = list
+        role.auth_time = Date.now()
+        role.auth_name = memoryUtils.user.username
+        // 请求更新
+        const result = await reqUpdateRole(role)
+        if (result.status === 0) {
+            message.success('更新角色权限成功')
+            getRoles()
+        } else {
+            message.error('更新角色权限失败')
+        }
     }
-    const handleCancel = () => [
+    const handleCancel = () => {
         setShowStatus(0)
-    ]
+        getRoleList.current.resetKeys()
+    }
+
+
     // 获得从子组件传过来的角色名称
     const getRoleName = async (name = '') => {
         if (name.trim() !== '') {
@@ -112,7 +134,9 @@ const Role = (props) => {
                 visible={showStatus === 2}
                 onOk={updateRole}
                 onCancel={handleCancel} >
-                <AuthForm role={role} />
+                <AuthForm
+                    role={role}
+                    ref={getRoleList} />
             </Modal>
         </Card>
     )

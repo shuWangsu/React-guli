@@ -108,3 +108,6 @@ export const reqRoles = () => ajax(baseURL + 'manage/role/list')
 
 // 添加角色
 export const reqAddRole = (name) => ajax(baseURL + '/manage/role/add', {roleName: name}, 'POST')
+
+// 
+export const reqUpdateRole = (role) => ajax(baseURL + '/manage/role/update', role, 'POST' )
