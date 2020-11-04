@@ -112,8 +112,7 @@ const Role = (props) => {
                 visible={showStatus === 2}
                 onOk={updateRole}
                 onCancel={handleCancel} >
-                <AuthForm 
-                    />
+                <AuthForm role={role} />
             </Modal>
         </Card>
     )
