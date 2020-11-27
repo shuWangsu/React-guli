@@ -30,7 +30,7 @@ const Login = (props) => {
       props.history.replace('/')
     } else { //登录失败
       // 提示错误信息
-      message.error(response.message)
+      message.error(response.msg)
     }
   };
   const user = memoryUtils.user

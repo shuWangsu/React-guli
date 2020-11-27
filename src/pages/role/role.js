@@ -6,6 +6,7 @@ import AddForm from './add-form'
 import AuthForm from './auth-form'
 import memoryUtils from '../../utils/memoryUtils'
 import { formateDate } from '../../utils/dataUtils'
+import storageUtils from '../../utils/storageUtils'
 // 路由
 const Role = (props) => {
     const [roles, setRoles] = useState([]) //所有角色列表
@@ -68,15 +69,27 @@ const Role = (props) => {
         // 请求更新
         const result = await reqUpdateRole(role)
         if (result.status === 0) {
-            message.success('更新角色权限成功')
-            getRoles()
+            // 如果更新的是自己的角色的权限，强制退出
+            if (role._id === memoryUtils.user.role_id) {
+                memoryUtils.user = {}
+                storageUtils.removeUser()
+                props.history.replace('/login')
+                message.info('当前用户角色权限已修改，请重新登录')
+            } else {
+                getRoles()
+                message.success('更新角色权限成功')
+            }
+            
         } else {
             message.error('更新角色权限失败')
         }
     }
-    const handleCancel = () => {
+    const authHandleCancel = () => {
         setShowStatus(0)
         getRoleList.current.resetKeys()
+    }
+    const addHandleCancel = () => {
+        setShowStatus(0)
     }
 
 
@@ -123,7 +136,7 @@ const Role = (props) => {
                 title="添加角色"
                 visible={showStatus === 1}
                 onOk={addRole}
-                onCancel={handleCancel} >
+                onCancel={addHandleCancel} >
                 <AddForm
                     saveForm={getRoleName}
                     ref={addRoleName} />
@@ -133,7 +146,7 @@ const Role = (props) => {
                 title="设置角色权限"
                 visible={showStatus === 2}
                 onOk={updateRole}
-                onCancel={handleCancel} >
+                onCancel={authHandleCancel} >
                 <AuthForm
                     role={role}
                     ref={getRoleList} />
