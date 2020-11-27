@@ -8,15 +8,17 @@ import {
 } from 'antd'
 import { formateDate } from '../../utils/dataUtils'
 import LinkButton from '../../components/link-button'
-import { reqUsers, reqDeleteUser, reqAddUser } from '../../api'
+import { reqUsers, reqDeleteUser } from '../../api'
 import UserForm from './user-form'
 // 用户路由
 const User = (props) => {
     const [showStatus, setShowStatus] = useState(0)
-    const [title, setTitle] = useState(<Button type='primary' onClick={() => setShowStatus(1)}>创建用户</Button>)
+    const [title] = useState(<Button type='primary' onClick={() =>createUser()}>创建用户</Button>)
+    const [modalTitle, setModalTitle] = useState('添加用户')
     const [users, setUsers] = useState([])
     const [roles, setRoles] = useState([])
     const [roleNames, setRoleNames] = useState({})
+    const [userInfo,setUserInfo] = useState({})
     const addUser = useRef()
     const columns = [
         {
@@ -45,7 +47,7 @@ const User = (props) => {
             title: '操作',
             render: (user) => (
                 <span>
-                    <LinkButton>修改</LinkButton>
+                    <LinkButton onClick={() => modifyUser(user)}>修改</LinkButton>
                     <LinkButton onClick={() => deleteUser(user)}>删除</LinkButton>
                 </span>
             )
@@ -69,11 +71,23 @@ const User = (props) => {
             },
         })
     }
+    // 修改用户信息
+    const modifyUser = (user) => {
+        setModalTitle('修改用户')
+        setShowStatus(1)
+        setUserInfo(user)
+
+    }
+    // 点击创建用户按钮
+    const createUser = () => {
+        setShowStatus(1)
+        setUserInfo({})
+    }
     const initRoleNames = (roles) => {
         const roleNames = roles.reduce((pre, role) => {
             pre[role._id] = role.name
             return pre
-        },{})
+        }, {})
         setRoleNames(roleNames)
     }
     const getUsers = async () => {
@@ -86,9 +100,15 @@ const User = (props) => {
             initRoleNames(roles)
         }
     }
+    const showModal = (val) => {
+        setShowStatus(val)
+    }
+    const handleCancel = e => {
+        setShowStatus(0)
+    };
     useEffect(() => {
         getUsers()
-    },[])
+    }, [])
     return (
         <Card title={title}>
             <Table
@@ -98,13 +118,17 @@ const User = (props) => {
                 rowKey='_id'
                 pagination={{ defaultPageSize: 8, showQuickJumper: true }} />
             <Modal
-                title="添加用户"
+                title={modalTitle}
                 visible={showStatus === 1}
-                onOk={addOrUpdateUser}
-                onCancel={() => setShowStatus(0)} >
-                <UserForm 
+                onCancel={handleCancel}
+                footer={null}
+                destroyOnClose={true} >
+                <UserForm
                     roles={roles}
-                    ref={addUser} />
+                    ref={addUser}
+                    userInfo={userInfo}
+                    showModal={showModal}
+                    getUsers={getUsers} />
             </Modal>
         </Card>
     )

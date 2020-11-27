@@ -1,5 +1,6 @@
 import React, { useImperativeHandle, forwardRef } from 'react'
-import { Form, Input, Select } from 'antd'
+import { Form, Input, Select, Button, message } from 'antd'
+import { reqAddOrUpdateUser } from '../../api'
 const { Option } = Select
 const Item = Form.Item
 /**
@@ -12,19 +13,40 @@ const UserForm = (props, ref) => {
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   }
-  // useEffect(() => {
-  //   form.setFieldsValue({ 'roleName': parentId })
-  // }, [parentId])
-  useImperativeHandle(ref, () => ({
-    // onFinish 就是暴露给父组件的方法
-    onFinish: () => {
-      // const name = form.getFieldValue('roleName')
-      // props.saveForm(name)
-      // form.setFieldsValue({ 'roleName': '' })
+  const tailLayout = {
+    wrapperCol: { offset: 15, span: 20 },
+  }
+  // 点击确认按钮
+  const onFinish = async (values) => {
+    if (Object.keys(props.userInfo).length !== 0) {
+      values._id = props.userInfo._id
     }
-  }))
+    const result = await reqAddOrUpdateUser(values)
+    if (result.status === 0) {
+      let msg
+      if (values._id) {
+        msg = '修改用户成功'
+      } else {
+        msg = '添加用户成功'
+      }
+      message.success(msg)
+      props.showModal(0)
+      props.getUsers()
+    } else {
+      message.error(result.msg)
+    }
+  };
+  //提交失败的情况 
+  const onFinishFailed = (errorInfo) => {
+    console.log('Failed:', errorInfo);
+  };
   return (
-    <Form form={form} {...layout}>
+    <Form form={form}
+      {...layout}
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+      preserve={false}
+      initialValues={props.userInfo}>
       <Item
         label='用户名'
         name='username'
@@ -36,17 +58,21 @@ const UserForm = (props, ref) => {
         ]}>
         <Input placeholder='请输入用户名' />
       </Item>
-      <Item
-        label='密码'
-        name='password'
-        rules={[
-          {
-            required: true,
-            message: '密码不能为空!'
-          },
-        ]}>
-        <Input type='password' placeholder='请输入密码' />
-      </Item>
+      {
+        props.userInfo._id ? null : (
+          <Item
+            label='密码'
+            name='password'
+            rules={[
+              {
+                required: true,
+                message: '密码不能为空!'
+              },
+            ]}>
+            <Input type='password' placeholder='请输入密码' />
+          </Item>
+        )
+      }
       <Item
         label='手机号'
         name='phone'
@@ -79,8 +105,16 @@ const UserForm = (props, ref) => {
           },
         ]}>
         <Select placeholder="请选择角色">
-          { roles.map(role => <Option key={role._id} value={role._id} >{role.name}</Option>) }
+          {roles.map(role => <Option key={role._id} value={role._id} >{role.name}</Option>)}
         </Select>
+      </Item>
+      <Item {...tailLayout} style={{ marginTop: 10 }}>
+        <Button style={{ marginRight: 10 }} onClick={() => props.showModal(0)}>
+          取消
+        </Button>
+        <Button type="primary" htmlType="submit">
+          确定
+        </Button>
       </Item>
     </Form>
   )

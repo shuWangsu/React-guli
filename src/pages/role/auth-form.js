@@ -21,7 +21,7 @@ const AuthForm = (props, ref) => {
       return checkedKeys
     },
     resetKeys: () => {
-      setCheckedKeys(props.role.menus)
+      return setCheckedKeys(props.role.menus)
     }
   }))
 

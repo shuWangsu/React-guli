@@ -11,7 +11,7 @@ const baseURL = ''
 export const reqLogin = (username, password) => ajax(baseURL + '/login', { username, password }, 'POST')
 
 // 添加用户
-export const reqAddUser = (user) => ajax(baseURL + '/manage/user/add', user, 'POST')
+export const reqAddOrUpdateUser = (user) => ajax(baseURL + '/manage/user/' + (user._id ? 'update' : 'add'), user, 'POST')
 
 //获取所在城市
 // export const reqCity = () => ajax(baseURL + '/getcity',{},'GET')
