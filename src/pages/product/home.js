@@ -123,6 +123,7 @@ const ProductHome = (props) => {
         rowKey='_id'
         bordered
         pagination={{
+          current: pageNum,
           total: total,
           defaultPageSize: PAGE_SIZE,
           showQuickJumper: true,

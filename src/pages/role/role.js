@@ -25,7 +25,7 @@ const Role = (props) => {
                 title: '创建时间',
                 dataIndex: 'create_time',
                 render: (create_time) => formateDate(create_time)
-                
+
             },
             {
                 title: '授权时间',
@@ -79,7 +79,7 @@ const Role = (props) => {
                 getRoles()
                 message.success('更新角色权限成功')
             }
-            
+
         } else {
             message.error('更新角色权限失败')
         }
@@ -129,7 +129,13 @@ const Role = (props) => {
                 dataSource={roles}
                 columns={columns}
                 pagination={{ defaultPageSize: 5 }}
-                rowSelection={{ type: 'radio', selectedRowKeys: [role._id] }}
+                rowSelection={{
+                    type: 'radio',
+                    selectedRowKeys: [role._id],
+                    onSelect: (role) => {
+                        setRole(role)
+                    }
+                }}
                 onRow={onRow}
             />
             <Modal
